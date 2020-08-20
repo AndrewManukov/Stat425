@@ -1,0 +1,451 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={City Hotel Analysis},
+            pdfauthor={Andro Manukov},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{City Hotel Analysis}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Andro Manukov}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{May 15, 2020}
+
+
+\begin{document}
+\maketitle
+
+\hypertarget{section-1-introduction}{%
+\subsection{Section 1: Introduction}\label{section-1-introduction}}
+
+Goal: Can we predict adr based on various factors?
+
+\hypertarget{section-2-exploratory-data-analysis}{%
+\subsection{Section 2: Exploratory Data
+Analysis}\label{section-2-exploratory-data-analysis}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(city_hotels)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 18
+##   hotel is_canceled lead_time arrival_date_ye~ arrival_date_mo~
+##   <chr>       <dbl>     <dbl>            <dbl> <chr>           
+## 1 City~           0         0             2015 August          
+## 2 City~           0         1             2015 August          
+## 3 City~           0         5             2015 August          
+## 4 City~           0        39             2015 August          
+## 5 City~           0         3             2015 September       
+## 6 City~           0        82             2015 September       
+## # ... with 13 more variables: arrival_date_week_number <dbl>,
+## #   arrival_date_day_of_month <dbl>, stays_in_weekend_nights <dbl>,
+## #   stays_in_week_nights <dbl>, adults <dbl>, children <dbl>,
+## #   babies <dbl>, meal <chr>, market_segment <chr>,
+## #   reserved_room_type <chr>, customer_type <chr>, adr <dbl>,
+## #   total_of_special_requests <dbl>
+\end{verbatim}
+
+Categorical Variables: hotel, is\_canceled, arrival\_date\_year,
+arrival\_date\_month, arrival\_date\_week\_number,
+arrival\_date\_day\_of\_month, meal, market\_segment,
+reserved\_room\_type, customer\_type
+
+Numerical: total\_of\_special\_requests, adr, babies, children, adults,
+stays\_in\_week\_nights, stays\_in\_weekend\_nights, lead\_time
+
+Should we keep all time related variables in our analysis?
+
+The only time related variable I am going to keep is arrival date month.
+I will use arrival date month to create a variable that classifies each
+month into a season. I think this will make the data analysis more
+concise and easier to work with, while also providing the same
+efficiency.
+
+Variables used in anaylsis: Arrival\_Date\_Month, total\_days\_stay
+(combination of stay\_week\_nights and stay weekend nights), adults,
+children, babies, meal, market\_segment, reserved\_room\_type,
+customer\_type, total\_speicla\_requesitr.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{city_hotels}\OperatorTok{$}\NormalTok{arrival_season =}\StringTok{ ""} \CommentTok{#init variable}
+\NormalTok{i =}\StringTok{ }\DecValTok{1} \CommentTok{#index for rows}
+\ControlFlowTok{for}\NormalTok{(val }\ControlFlowTok{in}\NormalTok{ city_hotels}\OperatorTok{$}\NormalTok{arrival_date_month) }\CommentTok{#increment through each row}
+\NormalTok{\{}
+  \ControlFlowTok{if}\NormalTok{(val }\OperatorTok{==}\StringTok{ "January"} \OperatorTok{|}\StringTok{ }\NormalTok{val }\OperatorTok{==}\StringTok{ "February"} \OperatorTok{|}\StringTok{ }\NormalTok{val }\OperatorTok{==}\StringTok{ "December"}\NormalTok{) \{ }\CommentTok{#conditional}
+\NormalTok{  city_hotels}\OperatorTok{$}\NormalTok{arrival_season[i] =}\StringTok{ "Winter"} \CommentTok{#change to season}
+\NormalTok{\} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(val }\OperatorTok{==}\StringTok{ "March"} \OperatorTok{|}\StringTok{ }\NormalTok{val }\OperatorTok{==}\StringTok{ "May"} \OperatorTok{|}\StringTok{ }\NormalTok{val }\OperatorTok{==}\StringTok{ "April"}\NormalTok{) \{}
+\NormalTok{  city_hotels}\OperatorTok{$}\NormalTok{arrival_season[i] =}\StringTok{ "Spring"}
+\NormalTok{\} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(val }\OperatorTok{==}\StringTok{ "June"} \OperatorTok{|}\StringTok{ }\NormalTok{val }\OperatorTok{==}\StringTok{ "July"} \OperatorTok{|}\StringTok{ }\NormalTok{val }\OperatorTok{==}\StringTok{ "August"}\NormalTok{) \{}
+\NormalTok{  city_hotels}\OperatorTok{$}\NormalTok{arrival_season[i] =}\StringTok{ "Summer"}
+\NormalTok{\} }\ControlFlowTok{else}\NormalTok{ \{}
+\NormalTok{  city_hotels}\OperatorTok{$}\NormalTok{arrival_season[i] =}\StringTok{ "Fall"}
+\NormalTok{\}}
+  
+\NormalTok{i =}\StringTok{ }\NormalTok{i }\OperatorTok{+}\StringTok{ }\DecValTok{1} \CommentTok{#incremenet index}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{city_hotels}\OperatorTok{$}\NormalTok{total_stays <-}\StringTok{ }\NormalTok{city_hotels}\OperatorTok{$}\NormalTok{stays_in_weekend_nights }\OperatorTok{+}\StringTok{ }\NormalTok{city_hotels}\OperatorTok{$}\NormalTok{stays_in_week_nights }\CommentTok{#creating total stays variable}
+
+\NormalTok{city_hotels <-}\StringTok{ }\KeywordTok{select}\NormalTok{(city_hotels, arrival_season, adults, children, meal, market_segment, customer_type, total_of_special_requests, total_stays, adr) }\CommentTok{#subsetting data}
+\end{Highlighting}
+\end{Shaded}
+
+Didn't keep babies because there are only two observations with one baby
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(city_hotels)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 9
+##   arrival_season adults children meal  market_segment customer_type
+##   <chr>           <dbl>    <dbl> <chr> <chr>          <chr>        
+## 1 Summer              2        0 SC    Online TA      Transient    
+## 2 Summer              2        0 SC    Online TA      Contract     
+## 3 Summer              2        0 BB    Direct         Transient    
+## 4 Summer              1        0 HB    Offline TA/TO  Transient-Pa~
+## 5 Fall                2        0 BB    Online TA      Contract     
+## 6 Fall                2        0 BB    Online TA      Transient    
+## # ... with 3 more variables: total_of_special_requests <dbl>,
+## #   total_stays <dbl>, adr <dbl>
+\end{verbatim}
+
+Remove resereved room type because it varies between hotels so it's not
+consistent.
+
+Should we keep it in our analysis? Does ADR change depending on which
+season it is?:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{season_group <-}\StringTok{ }\KeywordTok{summarise_at}\NormalTok{(}\KeywordTok{group_by}\NormalTok{(city_hotels, arrival_season), }\KeywordTok{vars}\NormalTok{(adr), }\KeywordTok{funs}\NormalTok{(}\KeywordTok{mean}\NormalTok{(.,}\DataTypeTok{na.rm=}\OtherTok{FALSE}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: funs() is soft deprecated as of dplyr 0.8.0
+## Please use a list of either functions or lambdas: 
+## 
+##   # Simple named list: 
+##   list(mean = mean, median = median)
+## 
+##   # Auto named with `tibble::lst()`: 
+##   tibble::lst(mean, median)
+## 
+##   # Using lambdas
+##   list(~ mean(., trim = .2), ~ median(., na.rm = TRUE))
+## This warning is displayed once per session.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ season_group, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ arrival_season, }\DataTypeTok{y =}\NormalTok{ adr, }\DataTypeTok{fill =}\NormalTok{ arrival_season)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_bar}\NormalTok{(}\DataTypeTok{position =} \StringTok{'dodge'}\NormalTok{, }\DataTypeTok{stat=}\StringTok{'identity'}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_text}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{label=} \KeywordTok{trunc}\NormalTok{(adr)), }\DataTypeTok{position=}\KeywordTok{position_dodge}\NormalTok{(}\DataTypeTok{width=}\FloatTok{0.9}\NormalTok{), }\DataTypeTok{vjust=}\OperatorTok{-}\FloatTok{0.25}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Season"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ylab}\NormalTok{(}\StringTok{"Average Daily Rate"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Average Daily Rate seperated by Season"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{subtitle =} \StringTok{"In Dollars"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"none"}\NormalTok{, }\DataTypeTok{panel.grid =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{axis.title =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{axis.text.y =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{),}
+        \DataTypeTok{plot.subtitle =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{finalproject_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+Obviously a difference btween ADR based on season. Therefore I will keep
+this as the only time variable.
+
+Testing for interaction:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{head}\NormalTok{(city_hotels)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 9
+##   arrival_season adults children meal  market_segment customer_type
+##   <chr>           <dbl>    <dbl> <chr> <chr>          <chr>        
+## 1 Summer              2        0 SC    Online TA      Transient    
+## 2 Summer              2        0 SC    Online TA      Contract     
+## 3 Summer              2        0 BB    Direct         Transient    
+## 4 Summer              1        0 HB    Offline TA/TO  Transient-Pa~
+## 5 Fall                2        0 BB    Online TA      Contract     
+## 6 Fall                2        0 BB    Online TA      Transient    
+## # ... with 3 more variables: total_of_special_requests <dbl>,
+## #   total_stays <dbl>, adr <dbl>
+\end{verbatim}
+
+Non-linear trends for numerical variables:
+
+\hypertarget{section-3-method}{%
+\subsection{Section 3: Method}\label{section-3-method}}
+
+\hypertarget{section-3.1}{%
+\paragraph{Section 3.1}\label{section-3.1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{simple_lm <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(adr }\OperatorTok{~}\StringTok{ }\NormalTok{., }\DataTypeTok{data =}\NormalTok{ city_hotels)}
+\KeywordTok{summary}\NormalTok{(simple_lm)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = adr ~ ., data = city_hotels)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -127.593  -22.932   -1.841   17.929  160.795 
+## 
+## Coefficients:
+##                              Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)                   95.3883    35.4265   2.693  0.00716 ** 
+## arrival_seasonSpring          -2.0797     2.5112  -0.828  0.40770    
+## arrival_seasonSummer           2.4079     2.4692   0.975  0.32961    
+## arrival_seasonWinter         -29.2277     3.2043  -9.121  < 2e-16 ***
+## adults                        19.9780     1.6736  11.937  < 2e-16 ***
+## children                      30.5458     1.8362  16.635  < 2e-16 ***
+## mealHB                        38.9201     6.4396   6.044 1.87e-09 ***
+## mealSC                       -21.0557     2.1037 -10.009  < 2e-16 ***
+## market_segmentComplementary  -28.9292    49.6503  -0.583  0.56020    
+## market_segmentCorporate      -17.4469    35.0099  -0.498  0.61831    
+## market_segmentDirect           5.9870    34.3923   0.174  0.86182    
+## market_segmentGroups         -28.3137    34.6405  -0.817  0.41385    
+## market_segmentOffline TA/TO  -26.4610    34.5218  -0.766  0.44349    
+## market_segmentOnline TA       -4.5432    34.3681  -0.132  0.89485    
+## customer_typeGroup            -5.6232    13.7980  -0.408  0.68367    
+## customer_typeTransient        -1.1340     8.5454  -0.133  0.89445    
+## customer_typeTransient-Party -10.1873     9.3383  -1.091  0.27547    
+## total_of_special_requests      2.8264     1.0391   2.720  0.00660 ** 
+## total_stays                   -0.6046     0.3898  -1.551  0.12110    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 34.23 on 1599 degrees of freedom
+## Multiple R-squared:  0.4327, Adjusted R-squared:  0.4263 
+## F-statistic: 67.76 on 18 and 1599 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\hypertarget{section-3.2}{%
+\paragraph{Section 3.2}\label{section-3.2}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm_model =}\StringTok{ }\KeywordTok{step}\NormalTok{(simple_lm, }\DataTypeTok{direction =} \StringTok{"backward"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Start:  AIC=11451.71
+## adr ~ arrival_season + adults + children + meal + market_segment + 
+##     customer_type + total_of_special_requests + total_stays
+## 
+##                             Df Sum of Sq     RSS   AIC
+## - customer_type              3      6617 1879816 11451
+## <none>                                   1873199 11452
+## - total_stays                1      2818 1876017 11452
+## - total_of_special_requests  1      8668 1881866 11457
+## - market_segment             6     74284 1947483 11503
+## - arrival_season             3    143516 2016715 11565
+## - meal                       2    165917 2039116 11585
+## - adults                     1    166926 2040125 11588
+## - children                   1    324174 2197372 11708
+## 
+## Step:  AIC=11451.42
+## adr ~ arrival_season + adults + children + meal + market_segment + 
+##     total_of_special_requests + total_stays
+## 
+##                             Df Sum of Sq     RSS   AIC
+## <none>                                   1879816 11451
+## - total_stays                1      2654 1882470 11452
+## - total_of_special_requests  1      8193 1888009 11456
+## - arrival_season             3    142518 2022334 11564
+## - meal                       2    160611 2040427 11580
+## - adults                     1    171580 2051396 11591
+## - market_segment             6    208317 2088133 11610
+## - children                   1    328828 2208644 11710
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(lm_model)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = adr ~ arrival_season + adults + children + meal + 
+##     market_segment + total_of_special_requests + total_stays, 
+##     data = city_hotels)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -127.544  -22.717   -1.944   17.728  161.403 
+## 
+## Coefficients:
+##                             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)                  93.9409    34.4179   2.729  0.00641 ** 
+## arrival_seasonSpring         -2.4395     2.4743  -0.986  0.32433    
+## arrival_seasonSummer          1.9846     2.4313   0.816  0.41446    
+## arrival_seasonWinter        -29.4082     3.1828  -9.240  < 2e-16 ***
+## adults                       20.1645     1.6676  12.092  < 2e-16 ***
+## children                     30.7310     1.8358  16.740  < 2e-16 ***
+## mealHB                       37.5507     6.4181   5.851 5.92e-09 ***
+## mealSC                      -20.6381     2.0967  -9.843  < 2e-16 ***
+## market_segmentComplementary -33.3459    48.4693  -0.688  0.49156    
+## market_segmentCorporate     -20.6398    35.0115  -0.590  0.55560    
+## market_segmentDirect          5.8602    34.4183   0.170  0.86482    
+## market_segmentGroups        -37.0514    34.4681  -1.075  0.28256    
+## market_segmentOffline TA/TO -31.3324    34.4873  -0.909  0.36374    
+## market_segmentOnline TA      -4.7963    34.3938  -0.139  0.88911    
+## total_of_special_requests     2.7362     1.0355   2.642  0.00831 ** 
+## total_stays                  -0.5865     0.3900  -1.504  0.13281    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 34.26 on 1602 degrees of freedom
+## Multiple R-squared:  0.4307, Adjusted R-squared:  0.4254 
+## F-statistic:  80.8 on 15 and 1602 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\hypertarget{section-3.3}{%
+\paragraph{Section 3.3}\label{section-3.3}}
+
+\hypertarget{section-3.4}{%
+\paragraph{Section 3.4}\label{section-3.4}}
+
+\hypertarget{section-4-discussion-of-results}{%
+\subsection{Section 4: Discussion of
+results}\label{section-4-discussion-of-results}}
+
+
+\end{document}

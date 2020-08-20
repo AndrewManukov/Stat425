@@ -1,0 +1,357 @@
+---
+title: "finalproject2"
+author: "Andro Manukov"
+date: "May 10, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Installing Packages:
+```{r Installing Packages}
+library(tidyverse)
+library(GGally)
+library(ggplot2)
+library(scales)
+library(gridExtra)
+library(grid)
+library(randomForest)
+library(lmtest)
+```
+
+Reading csv and subsetting to just city hotels:
+```{r Reading Data and Subsetting}
+Hotel <- read_csv("D:/UIUC/Spring2020/stat425/finalproject/stat425_fpdata.csv")
+city_hotels <- subset(Hotel, Hotel$hotel == "City Hotel") #Subset just city hotels because im section two. 
+```
+
+Creating seasons variable:
+```{r Creating Seasons}
+city_hotels$arrival_season = "" #init variable
+i = 1 #index for rows
+for(val in city_hotels$arrival_date_month) #increment through each row
+{
+  if(val == "January" | val == "February" | val == "December") { #conditional
+  city_hotels$arrival_season[i] = "Winter" #change to season
+} else if(val == "March" | val == "May" | val == "April") {
+  city_hotels$arrival_season[i] = "Spring"
+} else if(val == "June" | val == "July" | val == "August") {
+  city_hotels$arrival_season[i] = "Summer"
+} else {
+  city_hotels$arrival_season[i] = "Fall"
+}
+  
+i = i + 1 #incremenet index
+}
+
+```
+
+```{r}
+head(city_hotels)
+```
+
+
+Creating total stays variable:
+```{r}
+city_hotels$total_stays <- city_hotels$stays_in_weekend_nights + city_hotels$stays_in_week_nights #creating total stays variable
+```
+
+Creating Bar Plots:
+```{r}
+#READ THIS ONE FOR A GENERAL TREND OF ALL OF THE OTHER BAR PLOTS!!!!!!!!!!!!
+#THIS BAR PLOT IS FOR ADR SEPERATED BY YEAR!!!!!!!!!!
+
+year_group <- summarise_at(group_by(city_hotels, arrival_date_year), vars(adr), funs(mean(.,na.rm=FALSE))) #GROUPBY THE VARIABLE WE ARE INVESTIGATING
+
+ggplot(data = year_group, aes(x = arrival_date_year, y = adr, fill = arrival_date_year)) + 
+  geom_bar(position = 'dodge', stat='identity') + #create bar plot
+  geom_text(aes(label= dollar(adr)), position=position_dodge(width=0.9), vjust=-0.25) + #add text to bar plot
+  xlab("Year") + ylab("Average Daily Rate") + ggtitle("Average Daily Rate seperated by Year") + scale_y_continuous(labels = scales::dollar) + theme(legend.position = "none", panel.grid =   element_blank(), #add all titles and everything
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) #ADD X, Y, TITLE LABELS AND ADJUST THEM
+```
+
+```{r}
+#plot for Average Daily Rate seperated by Season
+season_group <- summarise_at(group_by(city_hotels, arrival_season), vars(adr), funs(mean(.,na.rm=FALSE)))
+
+ggplot(data = season_group, aes(x = arrival_season, y = adr, fill = arrival_season)) +
+  geom_bar(position = 'dodge', stat='identity') +
+  geom_text(aes(label= dollar(adr)), position=position_dodge(width=0.9), vjust=-0.25) +
+  xlab("Season") + ylab("Average Daily Rate") + ggtitle("Average Daily Rate seperated by Season") +   scale_y_continuous(labels = scales::dollar) + theme(legend.position = "none", panel.grid =   element_blank(),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+#plot for Average Daily Rate seperated by Arrival Date of Month"
+day_group <- summarise_at(group_by(city_hotels, arrival_date_day_of_month), vars(adr), funs(mean(.,na.rm=FALSE)))
+
+ggplot(data = day_group, aes(x = arrival_date_day_of_month, y = adr, fill = "red")) +
+  geom_bar(position = 'dodge', stat='identity') +
+  xlab("Day") + ylab("Average Daily Rate") + ggtitle("Average Daily Rate seperated by Arrival Date of Month") +   scale_y_continuous(labels = scales::dollar) + theme(legend.position = "none", panel.grid =   element_blank(),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+#creating plot to test for interaction between year and season
+year_season_group <- summarise_at(group_by(city_hotels, arrival_season, arrival_date_year), vars(adr), funs(mean(.,na.rm=FALSE)))
+
+ggplot(year_season_group, aes(x=arrival_season, y=adr, fill = as.factor(arrival_date_year))) +
+    geom_bar(position = 'dodge', stat='identity') +
+  xlab("Season") + ylab("Average Daily Rate") + ggtitle("Testing for Interaction between Year and Season") +   scale_y_continuous(labels = scales::dollar) + theme(panel.grid = element_blank(),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) + labs(fill = "Year")
+```
+
+```{r}
+#creating is canceled group plot.
+is_canceled_group <- summarise_at(group_by(city_hotels, is_canceled), vars(adr), funs(mean(.,na.rm=FALSE)))
+
+ggplot(data = is_canceled_group, aes(x = is_canceled, y = adr, fill = is_canceled)) +
+  geom_bar(position = 'dodge', stat='identity') +
+  geom_text(aes(label= dollar(adr)), position=position_dodge(width=0.9), vjust=-0.25) +
+  xlab("is_canceled") + ylab("Average Daily Rate") + ggtitle("Average Daily Rate seperated by is_canceled") +   scale_y_continuous(labels = scales::dollar) + theme(legend.position = "none", panel.grid =   element_blank(),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+#creating plot for meal group
+meal_group <- summarise_at(group_by(city_hotels, meal), vars(adr), funs(mean(.,na.rm=FALSE)))
+
+meal_package_plot <- ggplot(data = meal_group, aes(x = meal, y = adr, fill = meal)) +
+  geom_bar(position = 'dodge', stat='identity') +
+  geom_text(aes(label= dollar(adr)), position=position_dodge(width=0.9), vjust=-0.25) +
+  xlab("Meal Package") + ylab("Average Daily Rate") + ggtitle("") +   scale_y_continuous(labels = scales::dollar) + theme(legend.position = "none", panel.grid =   element_blank(),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+#mcreating plot for market_group
+market_group <- summarise_at(group_by(city_hotels, market_segment), vars(adr), funs(mean(.,na.rm=FALSE)))
+
+market_segment_plot <- ggplot(data = market_group, aes(x = market_segment, y = adr, fill = market_segment)) +
+  geom_bar(position = 'dodge', stat='identity') +
+  geom_text(aes(label= dollar(adr), angle = 90), hjust= 2) +
+  xlab("Market Segment") + ylab("Average Daily Rate") + ggtitle("Average Daily Rate seperated by Market Segment and Seperated by Meal Plan") +   scale_y_continuous(labels = scales::dollar) + theme(legend.position = "none", panel.grid =   element_blank(),
+        plot.title = element_text(hjust = 0),
+        plot.subtitle = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle = 45, hjust = 1))
+```
+ 
+```{r}
+grid.arrange(meal_package_plot, market_segment_plot, layout_matrix = cbind(c(2,2), c(1,1))) #combining to save space
+```
+
+```{r}
+#creating room type plot
+reserve_group <- summarise_at(group_by(city_hotels, reserved_room_type), vars(adr), funs(mean(.,na.rm=FALSE)))
+
+reserve_group_plot <- ggplot(data = reserve_group, aes(x = reserved_room_type, y = adr, fill = reserved_room_type)) +
+  geom_bar(position = 'dodge', stat='identity') +
+  geom_text(aes(label= dollar(adr), angle = 90), hjust = 2) +
+  xlab("Room Type") + ylab("Average Daily Rate") + ggtitle("") +   scale_y_continuous(labels = scales::dollar) + theme(legend.position = "none", panel.grid =   element_blank(),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+#creating customer group plot
+customer_group <- summarise_at(group_by(city_hotels, customer_type), vars(adr), funs(mean(.,na.rm=FALSE)))
+
+customer_group_plot <- ggplot(data = customer_group, aes(x = customer_type, y = adr, fill = customer_type)) +
+  geom_bar(position = 'dodge', stat='identity') +
+  geom_text(aes(label= dollar(adr), angle = 90), hjust = 3) +
+  xlab("Customer Type") + ylab("Average Daily Rate") + ggtitle("Average Daily Rate seperated by Customer Type and Seperated by Room Type") +   scale_y_continuous(labels = scales::dollar) + theme(legend.position = "none", panel.grid =   element_blank(),
+        plot.title = element_text(hjust = 0),
+        plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+#combining two plots to save space :(
+grid.arrange(reserve_group_plot, customer_group_plot, layout_matrix = cbind(c(2,2), c(1,1)))
+```
+
+```{r}
+#looking at Average Daily Rate seperated by Number of Special Requests
+special_group <- summarise_at(group_by(city_hotels, total_of_special_requests), vars(adr), funs(mean(.,na.rm=FALSE)))
+
+ggplot(data = special_group, aes(x = total_of_special_requests, y = adr, fill = "red")) +
+  geom_bar(position = 'dodge', stat='identity') +
+  geom_text(aes(label= dollar(adr)), position=position_dodge(width=0.9), vjust=-0.25) +
+  xlab("Number of Special Requests") + ylab("Average Daily Rate") + ggtitle("Average Daily Rate seperated by Number of Special Requests") +   scale_y_continuous(labels = scales::dollar) + theme(legend.position = "none", panel.grid =   element_blank(),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+#looking at Average Daily Rate seperated by Number of Total People"
+city_hotels$total_people <- city_hotels$adults + city_hotels$children
+
+people_group <- summarise_at(group_by(city_hotels, total_people), vars(adr), funs(mean(.,na.rm=FALSE)))
+
+ggplot(data = people_group, aes(x = total_people, y = adr, fill = total_people)) +
+  geom_bar(position = 'dodge', stat='identity') +
+  geom_text(aes(label= dollar(adr)), position=position_dodge(width=0.9), vjust=-0.25) +
+  xlab("Total People") + ylab("Average Daily Rate") + ggtitle("Average Daily Rate seperated by Number of Total People") +   scale_y_continuous(labels = scales::dollar) + theme(legend.position = "none", panel.grid =   element_blank(),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+```
+
+```{r}
+head(city_hotels)
+```
+
+Testing Numerical Variables:
+```{r}
+ggpairs(select(city_hotels, c(adr, total_stays, lead_time))) + ggtitle("Analysis between numerical total_stays and lead_time and ADR") + theme(legend.position = "none", panel.grid =   element_blank(),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+#looking at total stays and lead time
+```
+
+
+Subsetting Dataset once more:
+```{r Modifying Dataset}
+city_hotels_removed <- select(city_hotels, is_canceled, reserved_room_type, arrival_season, total_people, meal, market_segment, customer_type, arrival_date_year, adr) #subsetting data
+```
+
+Converting to factor variables:
+```{r}
+city_hotels_removed$is_canceled = as.factor(city_hotels$is_canceled)
+city_hotels_removed$reserved_room_type = as.factor(city_hotels$reserved_room_type)
+city_hotels_removed$arrival_season = as.factor(city_hotels$arrival_season)
+city_hotels_removed$total_people = as.factor(city_hotels$total_people)
+city_hotels_removed$meal = as.factor(city_hotels$meal)
+city_hotels_removed$market_segment = as.factor(city_hotels$market_segment)
+city_hotels_removed$customer_type = as.factor(city_hotels$customer_type)
+city_hotels_removed$arrival_date_year = as.factor(city_hotels$arrival_date_year)
+#creating factor variables
+```
+
+```{r}
+head(city_hotels_removed)
+```
+
+Creating simple model:
+```{r}
+simple_model <- lm(adr ~ . , data = city_hotels_removed)
+summary(simple_model) #fitting simple model, looking at summary
+```
+
+BIC of simple model:
+```{r}
+BIC(simple_model) #BIC for simple model
+```
+
+
+
+ADD A TRAIN AND TEST SET FOR 3.2 AND 3.3
+
+Subsetting data to remove marketsegment:
+```{r}
+city_hotels_removed <- select(city_hotels_removed, is_canceled, reserved_room_type, arrival_season, total_people, meal, customer_type, arrival_date_year, adr) #cutting down dataset
+```
+
+Creating test and train sets:
+```{r}
+# creating test and train datasets
+## 75% of the sample size
+smp_size <- floor(0.75 * nrow(city_hotels_removed))
+
+## set the seed to make your partition reproducible
+set.seed(123)
+train_ind <- sample(seq_len(nrow(city_hotels_removed)), size = smp_size) #index
+
+train <- city_hotels_removed[train_ind, ]
+test <- city_hotels_removed[-train_ind, ]
+
+#https://stackoverflow.com/questions/17200114/how-to-split-data-into-training-testing-sets-using-sample-function
+```
+
+
+
+Creating complex model:
+```{r}
+complex_model <- lm(adr ~ . + arrival_season * arrival_date_year, data = train)
+summary(complex_model) #fitting model and looking at summary
+```
+
+BIC of complex model:
+```{r}
+BIC(complex_model) #BIC of MLR model
+```
+
+Predict using complex model:
+```{r}
+#predict_df = data.frame(is_canceled = "0", arrival_season = "Winter", arrival_date_year = #"2016", meal = "BB", reserved_room_type = "C", customer_type = "Transient", total_people #= "4")
+
+mean(predict(complex_model, test)) #predicting the ADR from the MLR model using test data
+```
+
+```{r}
+head(city_hotels_removed) #viewing dataset for convience
+```
+
+Creating Random Forest:
+```{r}
+rfModel = randomForest(adr ~ ., ntree = 2000, data = train, seed = 425)
+rfModel #creating the RF
+```
+
+Importance values of rf:
+```{r}
+rfModel$importance #importance of RF model variables
+```
+
+RMSE of RF:
+```{r}
+mean(sqrt(rfModel$mse)) #rmse of RF model
+```
+
+Predict using RF:
+```{r}
+predict_tree = predict(rfModel, data = test, predict.all = TRUE)
+mean(predict_tree) #predict using RF
+``` 
+
+RMSE of MLR:
+```{r}
+sqrt(sum(complex_model$residuals^2)/nrow(city_hotels_removed)) #RMSE of MLR model
+```
+
+SD of ADR:
+
+```{r}
+sd(test$adr)
+```
+
+Model Diagnostics:
+
+QQ plot
+```{r}
+qqnorm(complex_model$residuals) #qq plot to test for normality 
+```
+Residual vs Fitted
+```{r}
+#plot for testing for constance variance assumption
+plot(complex_model$fitted.values, complex_model$residuals, xlab = "Fitted", ylab = "Residuals", main = "Residuals vs Fitted")
+```
+Residual vs index
+```{r}
+#plot to help test for correlated errors
+len = 1:1213 #index
+plot(len, complex_model$residuals, xlab = "Index", ylab = "Residuals", main = "Residuals vs Index")
+lines(len, complex_model$residuals)
+```
+
+durbin watson test
+```{r}
+dwtest(complex_model) #correlated errors test
+```
+

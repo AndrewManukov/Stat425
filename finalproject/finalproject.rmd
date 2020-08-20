@@ -1,0 +1,142 @@
+---
+title: "City Hotel Analysis"
+author: "Andro Manukov"
+date: "May 15, 2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r Installing Packages, echo = FALSE, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(GGally)
+library(ggplot2)
+library(scales)
+```
+
+```{r Reading Data and Subsetting, message = FALSE, echo = FALSE}
+Hotel <- read_csv("D:/UIUC/Spring2020/stat425/finalproject/stat425_fpdata.csv")
+city_hotels <- subset(Hotel, Hotel$hotel == "City Hotel") #Subset just city hotels because im section two. 
+```
+
+## Section 1: Introduction ##
+
+Goal: Can we predict adr based on various factors?  
+
+## Section 2: Exploratory Data Analysis ##
+
+
+```{r}
+head(city_hotels)
+```
+
+Categorical Variables: hotel, is_canceled, arrival_date_year, arrival_date_month, arrival_date_week_number, arrival_date_day_of_month, meal, market_segment, reserved_room_type, customer_type
+
+Numerical: total_of_special_requests, adr, babies, children, adults, stays_in_week_nights, stays_in_weekend_nights, lead_time
+
+Should we keep all time related variables in our analysis?
+
+The only time related variable I am going to keep is arrival date month. I will use arrival date month to create a variable that classifies each month into a season. I think this will make the data analysis more concise and easier to work with, while also providing the same efficiency. 
+
+Variables used in anaylsis: Arrival_Date_Month, total_days_stay (combination of stay_week_nights and stay weekend nights), adults, children, babies, meal, market_segment, reserved_room_type, customer_type, total_speicla_requesitr. 
+
+```{r Creating Seasons}
+city_hotels$arrival_season = "" #init variable
+i = 1 #index for rows
+for(val in city_hotels$arrival_date_month) #increment through each row
+{
+  if(val == "January" | val == "February" | val == "December") { #conditional
+  city_hotels$arrival_season[i] = "Winter" #change to season
+} else if(val == "March" | val == "May" | val == "April") {
+  city_hotels$arrival_season[i] = "Spring"
+} else if(val == "June" | val == "July" | val == "August") {
+  city_hotels$arrival_season[i] = "Summer"
+} else {
+  city_hotels$arrival_season[i] = "Fall"
+}
+  
+i = i + 1 #incremenet index
+}
+
+```
+
+```{r Modifying Dataset}
+city_hotels$total_stays <- city_hotels$stays_in_weekend_nights + city_hotels$stays_in_week_nights #creating total stays variable
+
+city_hotels <- select(city_hotels, arrival_season, adults, children, meal, market_segment, customer_type, total_of_special_requests, total_stays, adr) #subsetting data
+```
+
+Didn't keep babies because there are only two observations with one baby
+```{r}
+head(city_hotels)
+```
+
+Remove resereved room type because it varies between hotels so it's not consistent. 
+
+
+Should we keep it in our analysis?
+Does ADR change depending on which season it is?:
+
+
+
+```{r}
+season_group <- summarise_at(group_by(city_hotels, arrival_season), vars(adr), funs(mean(.,na.rm=FALSE)))
+
+ggplot(data = season_group, aes(x = arrival_season, y = adr, fill = arrival_season)) +
+  geom_bar(position = 'dodge', stat='identity') +
+  geom_text(aes(label= trunc(adr)), position=position_dodge(width=0.9), vjust=-0.25) +
+  xlab("Season") + ylab("Average Daily Rate") + ggtitle("Average Daily Rate seperated by Season") + labs(subtitle = "In Dollars") + 
+  theme(legend.position = "none", panel.grid = element_blank(),
+        axis.title = element_blank(),
+        axis.text.y = element_blank(),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+```
+
+Obviously a difference btween ADR based on season. Therefore I will keep this as the only time variable. 
+
+Testing for interaction: 
+
+```{r}
+head(city_hotels)
+```
+
+```{r}
+
+```
+
+
+
+Non-linear trends for numerical variables:
+
+
+
+## Section 3: Method ##
+
+#### Section 3.1 ####
+
+```{r}
+simple_lm <- lm(adr ~ ., data = city_hotels)
+summary(simple_lm)
+```
+
+
+#### Section 3.2 ####
+
+```{r}
+lm_model = step(simple_lm, direction = "backward")
+```
+```{r}
+summary(lm_model)
+```
+
+
+#### Section 3.3 ####
+
+#### Section 3.4 ####
+
+## Section 4: Discussion of results ##
